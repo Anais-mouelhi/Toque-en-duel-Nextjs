@@ -1,7 +1,21 @@
+'use client';
+
+import { useState, useEffect, use } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 
-const fetchRecipeById = async (id: string) => {
+interface Recipe {
+  id: string;
+  photo: string;
+  titre: string;
+  description: string;
+  time?: string;
+  portions?: string;
+  ingredients: string[] | string;
+  etapes: string[] | string;
+}
+
+async function fetchRecipeById(id: string): Promise<Recipe | null> {
   try {
     const res = await fetch(`http://localhost:3000/api/recipes/${id}`, {
       cache: "no-store",
@@ -16,13 +30,25 @@ const fetchRecipeById = async (id: string) => {
     console.error("Erreur lors de la récupération de la recette :", error);
     return null;
   }
-};
+}
 
-export default async function RecipePage({ params }: { params: { id: string } }) {
-  const recipe = await fetchRecipeById(params.id);
+export default function RecipePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      const data = await fetchRecipeById(id);
+      setRecipe(data);
+    };
+
+    fetchRecipe();
+  }, [id]);
 
   if (!recipe) {
     notFound();
+    return null;
   }
 
   return (
@@ -59,17 +85,17 @@ export default async function RecipePage({ params }: { params: { id: string } })
                 ))}
         </ul>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Étapes de préparation</h2>
-          <ol className="list-decimal list-inside text-gray-700 text-lg space-y-3">
-            {Array.isArray(recipe.etapes)
-              ? recipe.etapes.map((etape: string, index: number) => (
-                  <li key={index}>{etape}</li>
-                ))
-              : recipe.etapes
-                  .split(".")
-                  .map((etape: string, index: number) => (
-                    <li key={index}>{etape.trim()}</li>
-                  ))}
-          </ol>
+        <ol className="list-decimal list-inside text-gray-700 text-lg space-y-3">
+          {Array.isArray(recipe.etapes)
+            ? recipe.etapes.map((etape: string, index: number) => (
+                <li key={index}>{etape}</li>
+              ))
+            : recipe.etapes
+                .split(".")
+                .map((etape: string, index: number) => (
+                  <li key={index}>{etape.trim()}</li>
+                ))}
+        </ol>
       </div>
     </div>
   );

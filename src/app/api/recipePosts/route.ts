@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import connect from "@/utils/db";
 import RecipePost from "@/models/RecipePost";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../../../utils/authOptions";
 import { getServerSession } from "next-auth";
 
 // Définition du type de session adapté à votre configuration
@@ -12,7 +12,7 @@ type SessionType = {
 } | null;
 
 export const POST = async (request: Request) => {
-  const session = await getServerSession(authOptions) as SessionType;
+  const session = await getServerSession({ req: request, ...authOptions }) as SessionType;
 
   if (!session?.user?.email) {
     return new NextResponse("Unauthorized", { status: 401 });

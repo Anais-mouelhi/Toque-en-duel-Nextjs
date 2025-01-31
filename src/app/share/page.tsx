@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image'; // Import the Image component
 
 interface Post {
   _id: string;
@@ -70,7 +71,14 @@ const ThreadsPage: React.FC = () => {
               <h2 className="text-xl font-semibold">{post.title}</h2>
               <p className="text-gray-300">{post.content}</p>
               {post.mediaUrl && (
-                <img className="mt-2 max-w-full h-auto rounded-lg border border-gray-700" src={post.mediaUrl} alt={`Media for ${post.title}`} />
+                <Image
+                  className="mt-2 rounded-lg border border-gray-700"
+                  src={post.mediaUrl}
+                  alt={`Media for ${post.title}`}
+                  width={500} // Example width, adjust as needed
+                  height={300} // Example height, adjust as needed
+                  layout="responsive" // Optional: makes image responsive
+                />
               )}
             </li>
           ))
