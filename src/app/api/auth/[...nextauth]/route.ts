@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import { Account, User as AuthUser } from "next-auth";
-import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
@@ -29,40 +28,23 @@ export const authOptions: any = {
               return user;
             }
           }
+          // Return null if user not found or password is incorrect
+          return null;
         } catch (err: any) {
           throw new Error(err);
         }
       },
     }),
-    GithubProvider({
-      clientId: process.env.GITHUB_ID ?? "",
-      clientSecret: process.env.GITHUB_SECRET ?? "",
-    }),
-    // ...add more providers here
+    // You can add more providers here if needed
   ],
   callbacks: {
     async signIn({ user, account }: { user: AuthUser; account: Account }) {
-      if (account?.provider == "credentials") {
+      // Since you're not using GitHub, you can simplify this callback
+      if (account?.provider === "credentials") {
         return true;
       }
-      if (account?.provider == "github") {
-        await connect();
-        try {
-          const existingUser = await User.findOne({ email: user.email });
-          if (!existingUser) {
-            const newUser = new User({
-              email: user.email,
-            });
-
-            await newUser.save();
-            return true;
-          }
-          return true;
-        } catch (err) {
-          console.log("Error saving user", err);
-          return false;
-        }
-      }
+      // Add any additional logic for other providers if you add them later
+      return false;
     },
   },
 };
