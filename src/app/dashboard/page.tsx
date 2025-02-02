@@ -1,25 +1,11 @@
+// Utilisation du client pour le rendu
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "../../utils/authOptions";
 import { signOut } from "next-auth/react";
-
-const Dashboard = async () => {
-  // Vérification de la session serveur
-  const session = await getServerSession(authOptions);
-
-  console.log("Session côté serveur:", session);
-
-  if (!session) {
-    redirect("/"); // Redirige vers la page d'accueil si la session est absente
-    return null; // Ajout de return pour éviter des erreurs de rendu
-  }
-
-  // Composant client avec un état local
-  return <DashboardContent session={session} />;
-};
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/utils/authOptions";
+import { redirect } from "next/navigation";
 
 interface DashboardContentProps {
   session: any;
@@ -56,6 +42,21 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ session }) => {
       </div>
     </div>
   );
+};
+
+// Composant serveur qui gère la session
+const Dashboard = async () => {
+  const session = await getServerSession(authOptions); // Récupère la session côté serveur
+
+  console.log("Session côté serveur:", session);
+
+  if (!session) {
+    redirect("/"); // Redirige vers la page d'accueil si la session est absente
+    return null; // Ajout de return pour éviter des erreurs de rendu
+  }
+
+  // Rendu du composant client avec les données de session
+  return <DashboardContent session={session} />;
 };
 
 export default Dashboard;
