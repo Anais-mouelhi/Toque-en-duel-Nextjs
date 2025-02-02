@@ -51,39 +51,51 @@ const ThreadsPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-gray-900 text-white">
-      <h1 className="text-2xl font-bold mb-4">Threads</h1>
+    <div className="max-w-3xl mx-auto p-6 bg-gray-900 text-white">
+      <h1 className="text-3xl font-bold mb-6 text-center">Threads</h1>
       <Link href="/create-post">
-        <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600">
+        <button className="bg-blue-600 text-white px-6 py-3 rounded-lg mb-6 transition transform hover:bg-blue-700 hover:scale-105">
           Créer un Nouveau Post
         </button>
       </Link>
-      <ul className="space-y-4">
+
+      <ul className="space-y-8">
         {Array.isArray(posts) && posts.length > 0 ? (
           posts.map((post) => (
-            <li key={post._id} className="border-b border-gray-700 pb-4">
-              <div className="flex items-center mb-2">
-                <div className="rounded-full bg-gray-700 w-10 h-10 flex items-center justify-center mr-2">
-                  <span className="text-sm">{post.userId?.email?.charAt(0) || '?'}</span>
+            <li key={post._id} className="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+              <div className="flex items-center mb-4">
+                <div className="rounded-full bg-gray-700 w-12 h-12 flex items-center justify-center mr-4">
+                  <span className="text-xl text-white">{post.userId?.email?.charAt(0) || '?'}</span>
                 </div>
-                <p className="text-sm text-gray-400">{post.userId?.email || 'Utilisateur inconnu'}</p>
+                <div>
+                  <p className="text-sm text-gray-400">{post.userId?.email || 'Utilisateur inconnu'}</p>
+                  <p className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</p>
+                </div>
               </div>
-              <h2 className="text-xl font-semibold">{post.title}</h2>
-              <p className="text-gray-300">{post.content}</p>
+
+              <h2 className="text-2xl font-semibold text-gray-100 mb-3">{post.title}</h2>
+              <p className="text-gray-300 mb-4">{post.content}</p>
+
               {post.mediaUrl && (
-                <Image
-                  className="mt-2 rounded-lg border border-gray-700"
-                  src={post.mediaUrl}
-                  alt={`Media for ${post.title}`}
-                  width={500} // Example width, adjust as needed
-                  height={300} // Example height, adjust as needed
-                  layout="responsive" // Optional: makes image responsive
-                />
+                <div className="overflow-hidden rounded-lg mb-4">
+                  <Image
+                    className="w-full h-64 object-cover transform hover:scale-105 transition duration-300"
+                    src={post.mediaUrl}
+                    alt={`Media for ${post.title}`}
+                    width={500}
+                    height={300}
+                    layout="responsive"
+                  />
+                </div>
               )}
+
+              <Link href={`/posts/${post._id}`} className="text-blue-500 hover:text-blue-700 text-sm">
+                Lire plus ➔
+              </Link>
             </li>
           ))
         ) : (
-          <p>Aucun post disponible.</p>
+          <p className="text-center text-gray-500">Aucun post disponible.</p>
         )}
       </ul>
     </div>

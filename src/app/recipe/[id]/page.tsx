@@ -1,21 +1,8 @@
-'use client';
-
-import { useState, useEffect, use } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 
-interface Recipe {
-  id: string;
-  photo: string;
-  titre: string;
-  description: string;
-  time?: string;
-  portions?: string;
-  ingredients: string[] | string;
-  etapes: string[] | string;
-}
-
-async function fetchRecipeById(id: string): Promise<Recipe | null> {
+// Fonction pour récupérer la recette par son ID
+const fetchRecipeById = async (id: string) => {
   try {
     const res = await fetch(`http://localhost:3000/api/recipes/${id}`, {
       cache: "no-store",
@@ -30,25 +17,18 @@ async function fetchRecipeById(id: string): Promise<Recipe | null> {
     console.error("Erreur lors de la récupération de la recette :", error);
     return null;
   }
-}
+};
 
-export default function RecipePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+// La fonction du composant RecipePage
+export default async function RecipePage({ params }: { params: { id: string } }) {
+  // Utilisation correcte des params dans le contexte de Next.js 13+ et App Router
+  const { id } = params;
 
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      const data = await fetchRecipeById(id);
-      setRecipe(data);
-    };
-
-    fetchRecipe();
-  }, [id]);
+  // On attend la récupération des données de la recette
+  const recipe = await fetchRecipeById(id);
 
   if (!recipe) {
-    notFound();
-    return null;
+    notFound(); // Si la recette n'est pas trouvée, afficher la page de non trouvé
   }
 
   return (
@@ -70,7 +50,7 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
         </div>
         <h1 className="text-4xl font-bold pt-6 pb-3 text-left text-xl md:text-5xl text-gray-800">{recipe.titre}</h1>
         <div className="py-2 text-left">
-          <p>{recipe.description || 'Description du plat...'}</p>
+         
         </div>
         <h4 className="text-xl font-bold pt-3 pb-1.5 text-left uppercase mt-13 mb-0">Ingrédients:</h4>
         <ul className="space-y-1 list-disc list-inside ml-0">
@@ -96,6 +76,15 @@ export default function RecipePage({ params }: { params: Promise<{ id: string }>
                   <li key={index}>{etape.trim()}</li>
                 ))}
         </ol>
+      {/* Section des boutons */}
+      <div className="flex justify-center space-x-4 mt-6">
+          <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+            J'ai réussi le défi
+          </button>
+          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+            Je n'ai pas réussi
+          </button>
+        </div>
       </div>
     </div>
   );
